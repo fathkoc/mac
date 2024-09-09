@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\CustomToken;
 use Illuminate\Http\Request;
 
 class AccountController extends Controller
@@ -88,5 +89,27 @@ class AccountController extends Controller
     {
         Account::destroy($id);
         return response()->noContent();
+    }
+
+    public function findByToken(Request $request)
+    {
+        // Authorization başlığından token'ı al
+        $token = $request->bearerToken();
+
+        // Token'ı veritabanında kontrol et
+        $tokenRecord = CustomToken::where('token', $token)->first();
+
+        if (!$tokenRecord) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // Token ile ilişkili Account'ı bul
+        $account = $tokenRecord->account()->with(['city', 'district'])->first();
+
+        if (!$account) {
+            return response()->json(['message' => 'Account not found'], 404);
+        }
+
+        return response()->json(['account' => $account], 200);
     }
 }

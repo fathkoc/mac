@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Account; 
 use App\Models\Otp;
+use App\Models\CustomToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -171,10 +172,17 @@ class OTPController extends Controller
 
             if ($account) {
                 Auth::login($account);
+                $token = CustomToken::create([
+                    'account_id' => $account->id,
+                    'name' => 'auth_token',
+                    'token' => bin2hex(random_bytes(40)), 
+                    'abilities' => json_encode(['*']),
+                ]);
                 return response()->json([
                     'status' => true,
                     'success' => true,
-                    'account' => $account
+                    'account' => $account,
+                    'token' => $token->token,
                 ], 200);
             } else {
                 return response()->json([

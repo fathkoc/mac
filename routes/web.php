@@ -25,13 +25,14 @@ Route::delete('/otp/{id}', [OTPController::class, 'destroy']);
 
 // OTP kodu oluştur
 Route::post('/auth/phone', [OTPController::class, 'generate']);
+Route::post('/auth/otp', [OTPController::class, 'authenticate']);
 
 // OTP kodunu doğrula ve giriş yap
 Route::post('/otp/verify', [OTPController::class, 'verify']);
 
 // Auth
 //Route::post('/auth/phone', [OTPController::class, 'authPhone']);
-Route::post('/auth/otp', [OTPController::class, 'authenticate']);
+
 
 Route::get('/check-session', [OTPController::class, 'checkSession']);
 
@@ -58,6 +59,7 @@ Route::post('/account/create_account', [AccountController::class, 'store']);
 Route::get('/accounts/{id}', [AccountController::class, 'show']);
 Route::put('/accounts/{id}', [AccountController::class, 'update']);
 Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
+Route::get('/account/get_account', [AccountController::class, 'findByToken']);
 
 // Cart
 Route::get('/carts', [CartController::class, 'index'])->name('carts.index');
