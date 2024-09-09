@@ -1,0 +1,934 @@
+{
+  "info": {
+    "_postman_id": "a3f3d1e6-4d9d-4e4a-9a6b-b5d8d1db4b7c",
+    "name": "My Application API",
+    "description": "Postman Collection for testing API routes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "OTP",
+      "item": [
+        {
+          "name": "Get OTPs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["otp"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phone_number\":\"1234567890\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["otp"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get OTP by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/otp/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["otp", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update OTP",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phone_number\":\"1234567890\",\"code\":\"123456\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/otp/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["otp", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete OTP",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/otp/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["otp", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate OTP Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phone_number\":\"1234567890\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/otp/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["otp", "generate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phone_number\":\"1234567890\",\"sms_code\":\"123456\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/otp/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["otp", "verify"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cities",
+      "item": [
+        {
+          "name": "Get Cities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cities",
+              "host": ["{{baseUrl}}"],
+              "path": ["cities"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create City",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"New City\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cities",
+              "host": ["{{baseUrl}}"],
+              "path": ["cities"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get City by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cities/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cities", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update City",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Updated City\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cities/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cities", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete City",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cities/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cities", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Districts",
+      "item": [
+        {
+          "name": "Get Districts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/districts",
+              "host": ["{{baseUrl}}"],
+              "path": ["districts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create District",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"New District\",\"city_id\":1}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/districts",
+              "host": ["{{baseUrl}}"],
+              "path": ["districts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get District by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/districts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["districts", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update District",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Updated District\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/districts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["districts", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete District",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/districts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["districts", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Get Accounts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phoneNumber\":\"1234567890\",\"name\":\"John Doe\",\"email\":\"john.doe@example.com\",\"city_id\":1,\"district_id\":1,\"address\":\"123 Street\",\"photoURL\":\"http://example.com/photo.jpg\",\"activated\":true,\"role\":\"user\",\"referenceCode\":\"REF123\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Account by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/accounts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Account",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phoneNumber\":\"1234567890\",\"name\":\"Jane Doe\",\"email\":\"jane.doe@example.com\",\"city_id\":1,\"district_id\":1,\"address\":\"456 Avenue\",\"photoURL\":\"http://example.com/photo.jpg\",\"activated\":true,\"role\":\"admin\",\"referenceCode\":\"REF456\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/accounts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/accounts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Carts",
+      "item": [
+        {
+          "name": "Get Carts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carts",
+              "host": ["{{baseUrl}}"],
+              "path": ["carts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"account_id\":1,\"total\":100.0}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/carts",
+              "host": ["{{baseUrl}}"],
+              "path": ["carts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Cart by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["carts", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Cart",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"account_id\":1,\"total\":150.0}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/carts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["carts", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["carts", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cart Addresses",
+      "item": [
+        {
+          "name": "Get Cart Addresses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart-addresses",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart-addresses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Cart Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"cart_id\":1,\"address\":\"123 Street\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cart-addresses",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart-addresses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Cart Address by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart-addresses/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart-addresses", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Cart Address",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"cart_id\":1,\"address\":\"456 Avenue\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cart-addresses/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart-addresses", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Cart Address",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart-addresses/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart-addresses", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cart Dates",
+      "item": [
+        {
+          "name": "Get Cart Dates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart-dates",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart-dates"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Cart Date",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"cart_id\":1,\"date\":\"2024-09-09\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cart-dates",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart-dates"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Cart Date by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart-dates/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart-dates", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Cart Date",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"cart_id\":1,\"date\":\"2024-09-10\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cart-dates/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart-dates", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Cart Date",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart-dates/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart-dates", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"New Category\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Updated Category\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categories/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Image Paths",
+      "item": [
+        {
+          "name": "Get Image Paths",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/image-paths",
+              "host": ["{{baseUrl}}"],
+              "path": ["image-paths"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Image Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"path\":\"/images/photo.jpg\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/image-paths",
+              "host": ["{{baseUrl}}"],
+              "path": ["image-paths"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Image Path by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/image-paths/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["image-paths", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Image Path",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"path\":\"/images/updated-photo.jpg\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/image-paths/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["image-paths", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Image Path",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/image-paths/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["image-paths", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Likes",
+      "item": [
+        {
+          "name": "Get Likes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/likes",
+              "host": ["{{baseUrl}}"],
+              "path": ["likes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Like",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"account_id\":1,\"likeable_type\":\"Product\",\"likeable_id\":1}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/likes",
+              "host": ["{{baseUrl}}"],
+              "path": ["likes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Like by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/likes/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["likes", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Like",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"account_id\":1,\"likeable_type\":\"Product\",\"likeable_id\":2}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/likes/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["likes", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Like",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/likes/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["likes", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
