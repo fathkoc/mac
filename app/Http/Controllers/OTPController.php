@@ -79,7 +79,7 @@ class OTPController extends Controller
 
         // OTP kodunu SMS ile gönderme işlemi yapılmalı
 
-        return response()->json(['message' => 'Otp code sent', 'status' => true], 200);
+        return response()->json(['message' => 'Otp code sent', 'status' => true,'sms_code'=>$otpCode], 200);
     }
 
     // Otp doğrulama ve giriş işlemi
