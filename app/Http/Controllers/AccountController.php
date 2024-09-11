@@ -16,18 +16,18 @@ class AccountController extends Controller
 
     public function store(Request $request)
     {
+
         // Verileri doğrula
         $request->validate([
             'phoneNumber' => 'required|string',
             'name' => 'required|string',
             'email' => 'required|email',
-            'city_id' => 'required|exists:cities,id',
-            'district_id' => 'required|exists:districts,id',
+            'cityId' => 'required|exists:cities,id',
+            'districtId' => 'required|exists:districts,id',
             'address' => 'required|string',
-            'photoURL' => 'nullable|string',
-            'activated' => 'required|boolean',
             'role' => 'required|string',
             'referenceCode' => 'nullable|string',
+            // activated alanını ekleyin
         ]);
 
         // Telefon numarası ve e-posta adresi kontrolü
@@ -47,40 +47,67 @@ class AccountController extends Controller
             ], 400);
         }
 
+
+        $data = $request->merge([
+            'city_id' => $request->input('cityId'),
+            'district_id' => $request->input('districtId'),
+            'activated' => true // Bu satırı ekledik
+        ])->except(['cityId', 'districtId']);
+
         // Yeni hesap oluştur ve ilişkileri yükle
-        $account = Account::create($request->all())->load('city', 'district');
+        $account = Account::create($data)->load('city', 'district');
+
+        $account->makeHidden(['city_id', 'district_id', 'photoURL', 'created_at', 'updated_at']);
+        $account->city->makeHidden(['created_at', 'updated_at']);
+        $account->district->makeHidden(['created_at', 'updated_at']);
+        $camelCasedAccount = $this->convertKeysToCamelCase($account->toArray());
 
         // Başarıyla oluşturulduğunu belirten yanıt döndür
         return response()->json([
             'status' => true,
             'message' => 'Account created successfully',
-            'account' => $account
+            'account' => $camelCasedAccount
         ], 201);
     }
 
+
     public function show($id)
     {
-        
-        return Account::with(['city', 'district'])->findOrFail($id);
+        $account = Account::with(['city', 'district'])->findOrFail($id);
+
+        $account->makeHidden(['city_id', 'district_id', 'photoURL', 'created_at', 'updated_at']);
+        $account->city->makeHidden(['created_at', 'updated_at']);
+        $account->district->makeHidden(['created_at', 'updated_at']);
+        $accountArray = $account->toArray();
+
+        $camelCasedAccount = $this->convertKeysToCamelCase($accountArray);
+
+        return response()->json(['account' => $camelCasedAccount], 200);
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'phoneNumber' => 'string',
-            'name' => 'string',
-            'email' => 'email',
-            'city_id' => 'exists:cities,id',
-            'district_id' => 'exists:districts,id',
-            'address' => 'string',
-            'photoURL' => 'string',
-            'activated' => 'boolean',
-            'role' => 'string',
-            'referenceCode' => 'string',
+            'phoneNumber' => 'required|string',
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'cityId' => 'required|exists:cities,id',
+            'districtId' => 'required|exists:districts,id',
+            'address' => 'required|string',
+            'role' => 'required|string',
+            'referenceCode' => 'nullable|string',
         ]);
 
         $account = Account::findOrFail($id);
-        $account->update($request->all());
+
+        // Verileri dönüştür
+        $data = $request->merge([
+            'city_id' => $request->input('cityId'),
+            'district_id' => $request->input('districtId'),
+        ])->except(['cityId', 'districtId']);
+
+        // Hesabı güncelle
+        $account->update($data);
 
         // Güncellenmiş hesabı ve ilişkileri getir
         return $account->load('city', 'district');
@@ -88,13 +115,28 @@ class AccountController extends Controller
 
     public function destroy($id)
     {
-        Account::destroy($id);
-        return response()->noContent();
+
+        $account = Account::find($id);
+
+        if (!$account) {
+
+            return response()->json(['status' => false, 'message' => 'Account not found'], 404);
+        }
+
+        // Hesabı sil
+        if ($account->delete()) {
+            // Silme işlemi başarılıysa başarı yanıtı döndür
+            return response()->json(['status' => true], 200);
+        } else {
+            // Silme işlemi başarısızsa hata yanıtı döndür
+            return response()->json(['status' => false, 'message' => 'Failed to delete account'], 500);
+        }
     }
+
 
     public function findByToken(Request $request)
     {
-        
+
         $token = $request->bearerToken();
 
         $tokenRecord = CustomToken::where('token', $token)->first();
@@ -109,9 +151,9 @@ class AccountController extends Controller
         if (!$account) {
             return response()->json(['message' => 'Account not found'], 404);
         }
-        $account->makeHidden(['city_id', 'district_id','photoURL','created_at','updated_at']);
-        $account->city->makeHidden(['created_at','updated_at']);
-        $account->district->makeHidden(['created_at','updated_at']);
+        $account->makeHidden(['city_id', 'district_id', 'photoURL', 'created_at', 'updated_at']);
+        $account->city->makeHidden(['created_at', 'updated_at']);
+        $account->district->makeHidden(['created_at', 'updated_at']);
         $camelCasedAccount = $this->convertKeysToCamelCase($account->toArray());
         return response()->json(['account' => $camelCasedAccount], 200);
     }

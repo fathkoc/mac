@@ -55,10 +55,10 @@ Route::get('/county/district/{id}', [DistrictController::class, 'getDistrict']);
 
 // Account
 Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
-Route::post('/account/create_account', [AccountController::class, 'store']);
-Route::get('/accounts/{id}', [AccountController::class, 'show']);
-Route::put('/accounts/{id}', [AccountController::class, 'update']);
-Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
+Route::post('/account/createAcccount', [AccountController::class, 'store']);
+Route::get('/accounts/show/{id}', [AccountController::class, 'show']);
+Route::put('/accounts/update/{id}', [AccountController::class, 'update']);
+Route::delete('/accounts/delete/{id}', [AccountController::class, 'destroy']);
 Route::get('/account/getAccount', [AccountController::class, 'findByToken']);
 
 // Cart
