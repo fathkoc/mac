@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\CustomToken;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AccountController extends Controller
 {
@@ -93,10 +94,9 @@ class AccountController extends Controller
 
     public function findByToken(Request $request)
     {
-        // Authorization başlığından token'ı al
+        
         $token = $request->bearerToken();
 
-        // Token'ı veritabanında kontrol et
         $tokenRecord = CustomToken::where('token', $token)->first();
 
         if (!$tokenRecord) {
@@ -109,7 +109,28 @@ class AccountController extends Controller
         if (!$account) {
             return response()->json(['message' => 'Account not found'], 404);
         }
+        $account->makeHidden(['city_id', 'district_id','photoURL','created_at','updated_at']);
+        $account->city->makeHidden(['created_at','updated_at']);
+        $account->district->makeHidden(['created_at','updated_at']);
+        $camelCasedAccount = $this->convertKeysToCamelCase($account->toArray());
+        return response()->json(['account' => $camelCasedAccount], 200);
+    }
 
-        return response()->json(['account' => $account], 200);
+    private function convertKeysToCamelCase($array)
+    {
+        $camelCasedArray = [];
+        foreach ($array as $key => $value) {
+            // Anahtarı camel case formatına çevir
+            $camelKey = Str::camel($key);
+
+            // Değer dizi veya nesne ise, recursive olarak camel case çevir
+            if (is_array($value) || is_object($value)) {
+                $value = $this->convertKeysToCamelCase((array) $value);
+            }
+
+            $camelCasedArray[$camelKey] = $value;
+        }
+
+        return $camelCasedArray;
     }
 }

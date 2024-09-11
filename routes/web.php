@@ -59,7 +59,7 @@ Route::post('/account/create_account', [AccountController::class, 'store']);
 Route::get('/accounts/{id}', [AccountController::class, 'show']);
 Route::put('/accounts/{id}', [AccountController::class, 'update']);
 Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
-Route::get('/account/get_account', [AccountController::class, 'findByToken']);
+Route::get('/account/getAccount', [AccountController::class, 'findByToken']);
 
 // Cart
 Route::get('/carts', [CartController::class, 'index'])->name('carts.index');

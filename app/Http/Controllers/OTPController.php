@@ -7,6 +7,7 @@ use App\Models\CustomToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 
 class OTPController extends Controller
@@ -55,10 +56,10 @@ class OTPController extends Controller
     {
 
         $request->validate([
-            'phone_number' => 'required|string',
+            'phoneNumber' => 'required|string',
         ]);
 
-        $phoneNumber = $request->input('phone_number');
+        $phoneNumber = $request->input('phoneNumber');
 
         // Telefon numarasını Account modelinde kontrol et
         $accountExists = Account::where('phoneNumber', $phoneNumber)->exists();
@@ -79,7 +80,7 @@ class OTPController extends Controller
 
         // OTP kodunu SMS ile gönderme işlemi yapılmalı
 
-        return response()->json(['message' => 'Otp code sent', 'status' => true,'sms_code'=>$otpCode], 200);
+        return response()->json(['message' => 'Otp code sent', 'status' => true,'smsCode'=>$otpCode], 200);
     }
 
     // Otp doğrulama ve giriş işlemi
@@ -149,11 +150,11 @@ class OTPController extends Controller
     {
     // Validasyon işlemi
         $validator = Validator::make($request->all(), [
-            'phone_number' => 'required|string',
-            'sms_code'     => 'required|string',
+            'phoneNumber' => 'required|string',
+            'smsCode'     => 'required|string',
         ], [
-            'phone_number.required' => 'Phone number is required.',
-            'sms_code.required'     => 'SMS code is required.',
+            'phoneNumber.required' => 'Phone number is required.',
+            'smsCode.required'     => 'SMS code is required.',
         ]);
 
         if ($validator->fails()) {
@@ -161,13 +162,13 @@ class OTPController extends Controller
         }
 
         // Telefon numarasına sahip ve SMS kodu doğru olan bir Otp olup olmadığını kontrol et
-        $otp = Otp::where('phone_number', $request->phone_number)
-            ->where('sms_code', $request->sms_code)
+        $otp = Otp::where('phone_number', $request->phoneNumber)
+            ->where('sms_code', $request->smsCode)
             ->first(); 
         if ($otp) {
             // Otp var ise, ilişkili Account'ı döndür
             $account = Account::with(['city', 'district'])
-            ->where('phoneNumber', $request->phone_number)
+            ->where('phoneNumber', $request->phoneNumber)
             ->first();
 
             if ($account) {
@@ -178,10 +179,14 @@ class OTPController extends Controller
                     'token' => bin2hex(random_bytes(40)), 
                     'abilities' => json_encode(['*']),
                 ]);
+                $account->makeHidden(['city_id', 'district_id','photoURL','created_at','updated_at']);
+                $account->city->makeHidden(['created_at','updated_at']);
+                $account->district->makeHidden(['created_at','updated_at']);
+                $camelCasedAccount = $this->convertKeysToCamelCase($account->toArray());
                 return response()->json([
                     'status' => true,
                     'success' => true,
-                    'account' => $account,
+                    'account' => $camelCasedAccount,
                     'token' => $token->token,
                 ], 200);
             } else {
@@ -196,6 +201,23 @@ class OTPController extends Controller
                 'message' => 'Invalid Otp code.',
             ], 400);
         }
+    }
+    private function convertKeysToCamelCase($array)
+    {
+        $camelCasedArray = [];
+        foreach ($array as $key => $value) {
+            // Anahtarı camel case formatına çevir
+            $camelKey = Str::camel($key);
+
+            // Değer dizi veya nesne ise, recursive olarak camel case çevir
+            if (is_array($value) || is_object($value)) {
+                $value = $this->convertKeysToCamelCase((array) $value);
+            }
+
+            $camelCasedArray[$camelKey] = $value;
+        }
+
+        return $camelCasedArray;
     }
 
     public function checkSession()
