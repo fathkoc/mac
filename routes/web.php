@@ -41,9 +41,9 @@ Route::get('/check-session', [OTPController::class, 'checkSession']);
 // City
 Route::get('/county/city', [CityController::class, 'index'])->name('cities.index');
 Route::post('/cities', [CityController::class, 'store']);
-Route::get('/cities/{id}', [CityController::class, 'show']);
+Route::get('/cities/show/{id}', [CityController::class, 'show']);
 Route::put('/cities/{id}', [CityController::class, 'update']);
-Route::delete('/cities/{id}', [CityController::class, 'destroy']);
+Route::delete('/cities/delete/{id}', [CityController::class, 'destroy']);
 
 // District
 Route::get('/districts', [DistrictController::class, 'index'])->name('districts.index');
