@@ -97,20 +97,30 @@ class AccountController extends Controller
             'role' => 'required|string',
             'referenceCode' => 'nullable|string',
         ]);
-
+    
         $account = Account::findOrFail($id);
-
+    
         // Verileri dönüştür
         $data = $request->merge([
             'city_id' => $request->input('cityId'),
             'district_id' => $request->input('districtId'),
         ])->except(['cityId', 'districtId']);
-
+    
         // Hesabı güncelle
         $account->update($data);
-
-        // Güncellenmiş hesabı ve ilişkileri getir
-        return $account->load('city', 'district');
+    
+        // Güncellenmiş hesabı ve ilişkileri yükle
+        $account->load('city', 'district');
+    
+        // Alanları gizle
+        $account->makeHidden(['city_id', 'district_id', 'photoURL', 'created_at', 'updated_at']);
+        $account->city->makeHidden(['created_at', 'updated_at']);
+        $account->district->makeHidden(['created_at', 'updated_at']);
+    
+        // CamelCase formatına dönüştür
+        $camelCasedAccount = $this->convertKeysToCamelCase($account->toArray());
+    
+        return response()->json(['account' => $camelCasedAccount], 200);
     }
 
     public function destroy($id)
