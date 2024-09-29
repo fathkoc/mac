@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ImagePath;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ImagePathController extends Controller
 {
@@ -14,10 +15,20 @@ class ImagePathController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'path' => 'required|string',
             'cart_id' => 'required|exists:carts,id',
+        ], [
+            'path.required' => 'The path field is required.',
+            'path.string' => 'The path field must be a string.',
+            'cart_id.required' => 'The cart ID field is required.',
+            'cart_id.exists' => 'The selected cart ID is invalid.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
 
         return ImagePath::create($request->all());
     }
@@ -29,10 +40,18 @@ class ImagePathController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'path' => 'string',
             'cart_id' => 'exists:carts,id',
+        ], [
+            'path.string' => 'The path field must be a string.',
+            'cart_id.exists' => 'The selected cart ID is invalid.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
 
         $imagePath = ImagePath::findOrFail($id);
         $imagePath->update($request->all());

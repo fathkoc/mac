@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -14,9 +15,17 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string',
+        ], [
+            'name.required' => 'İsim alanı gereklidir.',
+            'name.string' => 'İsim alanı bir metin olmalıdır.',
         ]);
+
+        // Doğrulama hatalarını kontrol et
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         return Category::create($request->all());
     }
@@ -28,9 +37,15 @@ class CategoryController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'string',
+        ], [
+            'name.string' => 'The name field must be a string.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $category = Category::findOrFail($id);
         $category->update($request->all());

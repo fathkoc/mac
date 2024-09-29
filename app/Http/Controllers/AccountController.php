@@ -1,10 +1,10 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Account;
-use App\Models\CustomToken;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class AccountController extends Controller
 {
@@ -16,19 +16,38 @@ class AccountController extends Controller
 
     public function store(Request $request)
     {
-
-        // Verileri doğrula
-        $request->validate([
+        // Genel doğrulama kuralları ve özel hata mesajları
+        $validator = Validator::make($request->all(), [
             'phoneNumber' => 'required|string',
             'name' => 'required|string',
             'email' => 'required|email',
-            'cityId' => 'required|exists:cities,id',
-            'districtId' => 'required|exists:districts,id',
+            'city_id' => 'required|exists:cities,id',
+            'district_id' => 'required|exists:districts,id',
             'address' => 'required|string',
+            'photoURL' => 'nullable|string',
+            'activated' => 'required|boolean',
             'role' => 'required|string',
             'referenceCode' => 'nullable|string',
-            // activated alanını ekleyin
+        ], [
+            'phoneNumber.required' => 'Telefon numarası gereklidir.',
+            'name.required' => 'İsim gereklidir.',
+            'email.required' => 'E-posta adresi gereklidir.',
+            'email.email' => 'Geçerli bir e-posta adresi girin.',
+            'city_id.required' => 'Şehir seçilmelidir.',
+            'city_id.exists' => 'Geçersiz şehir ID.',
+            'district_id.required' => 'Semt seçilmelidir.',
+            'district_id.exists' => 'Geçersiz semt ID.',
+            'address.required' => 'Adres gereklidir.',
+            'activated.required' => 'Aktivasyon durumu gereklidir.',
+            'activated.boolean' => 'Aktivasyon durumu doğru/yanlış olmalıdır.',
+            'role.required' => 'Rol gereklidir.',
+            'referenceCode.string' => 'Referans kodu geçerli bir dize olmalıdır.',
         ]);
+
+        // Doğrulama hatalarını kontrol et
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         // Telefon numarası ve e-posta adresi kontrolü
         $existingAccountByPhone = Account::where('phoneNumber', $request->phoneNumber)->first();
@@ -47,142 +66,64 @@ class AccountController extends Controller
             ], 400);
         }
 
-
-        $data = $request->merge([
-            'city_id' => $request->input('cityId'),
-            'district_id' => $request->input('districtId'),
-            'activated' => true // Bu satırı ekledik
-        ])->except(['cityId', 'districtId']);
-
         // Yeni hesap oluştur ve ilişkileri yükle
-        $account = Account::create($data)->load('city', 'district');
-
-        $account->makeHidden(['city_id', 'district_id', 'photoURL', 'created_at', 'updated_at']);
-        $account->city->makeHidden(['created_at', 'updated_at']);
-        $account->district->makeHidden(['created_at', 'updated_at']);
-        $camelCasedAccount = $this->convertKeysToCamelCase($account->toArray());
+        $account = Account::create($request->all())->load('city', 'district');
 
         // Başarıyla oluşturulduğunu belirten yanıt döndür
         return response()->json([
             'status' => true,
             'message' => 'Account created successfully',
-            'account' => $camelCasedAccount
+            'account' => $account
         ], 201);
     }
 
-
     public function show($id)
     {
-        $account = Account::with(['city', 'district'])->findOrFail($id);
 
-        $account->makeHidden(['city_id', 'district_id', 'photoURL', 'created_at', 'updated_at']);
-        $account->city->makeHidden(['created_at', 'updated_at']);
-        $account->district->makeHidden(['created_at', 'updated_at']);
-        $accountArray = $account->toArray();
-
-        $camelCasedAccount = $this->convertKeysToCamelCase($accountArray);
-
-        return response()->json(['account' => $camelCasedAccount], 200);
+        return Account::with(['city', 'district'])->findOrFail($id);
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'phoneNumber' => 'required|string',
-            'name' => 'required|string',
-            'email' => 'required|email',
-            'cityId' => 'required|exists:cities,id',
-            'districtId' => 'required|exists:districts,id',
-            'address' => 'required|string',
-            'role' => 'required|string',
-            'referenceCode' => 'nullable|string',
+        $validator = Validator::make($request->all(), [
+            'phoneNumber' => 'string',
+            'name' => 'string',
+            'email' => 'email',
+            'city_id' => 'exists:cities,id',
+            'district_id' => 'exists:districts,id',
+            'address' => 'string',
+            'photoURL' => 'string',
+            'activated' => 'boolean',
+            'role' => 'string',
+            'referenceCode' => 'string',
+        ], [
+            'phoneNumber.string' => 'Telefon numarası geçerli bir dize olmalıdır.',
+            'name.string' => 'İsim geçerli bir dize olmalıdır.',
+            'email.email' => 'Geçerli bir e-posta adresi girin.',
+            'city_id.exists' => 'Geçersiz şehir ID.',
+            'district_id.exists' => 'Geçersiz semt ID.',
+            'address.string' => 'Adres geçerli bir dize olmalıdır.',
+            'photoURL.string' => 'Fotoğraf URL geçerli bir dize olmalıdır.',
+            'activated.boolean' => 'Aktivasyon durumu doğru/yanlış olmalıdır.',
+            'role.string' => 'Rol geçerli bir dize olmalıdır.',
+            'referenceCode.string' => 'Referans kodu geçerli bir dize olmalıdır.',
         ]);
-    
+
+        // Doğrulama hatalarını kontrol et
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
         $account = Account::findOrFail($id);
-    
-        // Verileri dönüştür
-        $data = $request->merge([
-            'city_id' => $request->input('cityId'),
-            'district_id' => $request->input('districtId'),
-        ])->except(['cityId', 'districtId']);
-    
-        // Hesabı güncelle
-        $account->update($data);
-    
-        // Güncellenmiş hesabı ve ilişkileri yükle
-        $account->load('city', 'district');
-    
-        // Alanları gizle
-        $account->makeHidden(['city_id', 'district_id', 'photoURL', 'created_at', 'updated_at']);
-        $account->city->makeHidden(['created_at', 'updated_at']);
-        $account->district->makeHidden(['created_at', 'updated_at']);
-    
-        // CamelCase formatına dönüştür
-        $camelCasedAccount = $this->convertKeysToCamelCase($account->toArray());
-    
-        return response()->json(['account' => $camelCasedAccount], 200);
+        $account->update($request->all());
+
+        // Güncellenmiş hesabı ve ilişkileri getir
+        return $account->load('city', 'district');
     }
 
     public function destroy($id)
     {
-
-        $account = Account::find($id);
-
-        if (!$account) {
-
-            return response()->json(['status' => false, 'message' => 'Account not found'], 404);
-        }
-
-        // Hesabı sil
-        if ($account->delete()) {
-            // Silme işlemi başarılıysa başarı yanıtı döndür
-            return response()->json(['status' => true], 200);
-        } else {
-            // Silme işlemi başarısızsa hata yanıtı döndür
-            return response()->json(['status' => false, 'message' => 'Failed to delete account'], 500);
-        }
-    }
-
-
-    public function findByToken(Request $request)
-    {
-
-        $token = $request->bearerToken();
-
-        $tokenRecord = CustomToken::where('token', $token)->first();
-
-        if (!$tokenRecord) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-
-        // Token ile ilişkili Account'ı bul
-        $account = $tokenRecord->account()->with(['city', 'district'])->first();
-
-        if (!$account) {
-            return response()->json(['message' => 'Account not found'], 404);
-        }
-        $account->makeHidden(['city_id', 'district_id', 'photoURL', 'created_at', 'updated_at']);
-        $account->city->makeHidden(['created_at', 'updated_at']);
-        $account->district->makeHidden(['created_at', 'updated_at']);
-        $camelCasedAccount = $this->convertKeysToCamelCase($account->toArray());
-        return response()->json(['account' => $camelCasedAccount], 200);
-    }
-
-    private function convertKeysToCamelCase($array)
-    {
-        $camelCasedArray = [];
-        foreach ($array as $key => $value) {
-            // Anahtarı camel case formatına çevir
-            $camelKey = Str::camel($key);
-
-            // Değer dizi veya nesne ise, recursive olarak camel case çevir
-            if (is_array($value) || is_object($value)) {
-                $value = $this->convertKeysToCamelCase((array) $value);
-            }
-
-            $camelCasedArray[$camelKey] = $value;
-        }
-
-        return $camelCasedArray;
+        Account::destroy($id);
+        return response()->noContent();
     }
 }

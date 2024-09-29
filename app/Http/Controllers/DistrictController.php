@@ -5,35 +5,34 @@ namespace App\Http\Controllers;
 use App\Models\District;
 use Illuminate\Http\Request;
 use App\Models\City;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class DistrictController extends Controller
 {
     public function index()
     {
-        // Tüm District kayıtlarını al
-        $districts = District::all();
-
-        // Gizlenmesi gereken alanları ayarla
-        $districts->makeHidden(['created_at', 'updated_at']);
-
-        // Verileri camelCase formatına dönüştür
-        $camelCasedDistricts = $this->convertKeysToCamelCase($districts->toArray());
-
-        // Yanıtı döndür
-        return response()->json([
-            'status' => true,
-            'districts' => $camelCasedDistricts
-        ], 200);
+        return District::all();
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'postCode' => 'required|string',
             'city_id' => 'required|exists:cities,id',
+        ], [
+            'name.required' => 'The name field is required.',
+            'name.string' => 'The name field must be a string.',
+            'postCode.required' => 'The postal code field is required.',
+            'postCode.string' => 'The postal code field must be a string.',
+            'city_id.required' => 'The city ID field is required.',
+            'city_id.exists' => 'The selected city ID is invalid.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
 
         return District::create($request->all());
     }
@@ -45,11 +44,20 @@ class DistrictController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'string',
             'postCode' => 'string',
             'city_id' => 'exists:cities,id',
+        ], [
+            'name.string' => 'The name field must be a string.',
+            'postCode.string' => 'The postal code field must be a string.',
+            'city_id.exists' => 'The selected city ID is invalid.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
 
         $district = District::findOrFail($id);
         $district->update($request->all());
@@ -65,49 +73,21 @@ class DistrictController extends Controller
 
     public function getDistrict($id)
     {
-        // Verilen ID'ye sahip şehri bul
+        // Verilen id'ye sahip şehri bul
         $city = City::find($id);
 
         // Şehir bulunamazsa hata döndür
         if (!$city) {
-            return response()->json([
-                'status' => false,
-                'message' => 'City not found'
-            ], 404);
+            return response()->json(['message' => 'City not found'], 404);
         }
 
         // Şehre ait ilçeleri al
         $districts = $city->districts;
 
-        // Gizlenmesi gereken alanları ayarla
-        $districts->makeHidden(['created_at', 'updated_at']);
 
-        // Verileri camelCase formatına dönüştür
-        $camelCasedDistricts = $this->convertKeysToCamelCase($districts->toArray());
-
-        // Yanıtı döndür
         return response()->json([
             'status' => true,
-            'districts' => $camelCasedDistricts
+            'Districts' => $districts
         ], 200);
     }
-
-
-    private function convertKeysToCamelCase($array)
-    {
-        $camelCasedArray = [];
-        foreach ($array as $key => $value) {
-            // Convert the key to camel case
-            $camelKey = Str::camel($key);
-
-            // Recursively convert nested arrays
-            if (is_array($value) || is_object($value)) {
-                $value = $this->convertKeysToCamelCase((array) $value);
-            }
-
-            $camelCasedArray[$camelKey] = $value;
-        }
-        return $camelCasedArray;
-    }
-
 }

@@ -1,13 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Account; 
+use App\Models\Account;
 use App\Models\Otp;
-use App\Models\CustomToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 
 class OTPController extends Controller
@@ -19,10 +17,20 @@ class OTPController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'phone_number' => 'required|string',
             'sms_code' => 'required|string',
+        ], [
+            'phone_number.required' => 'Phone number is required.',
+            'phone_number.string' => 'Phone number must be a string.',
+            'sms_code.required' => 'SMS code is required.',
+            'sms_code.string' => 'SMS code must be a string.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
 
         return Otp::create($request->all());
     }
@@ -34,10 +42,18 @@ class OTPController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'phone_number' => 'string',
             'sms_code' => 'string',
+        ], [
+            'phone_number.string' => 'Phone number must be a valid string.',
+            'sms_code.string' => 'SMS code must be a valid string.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
 
         $otp = Otp::findOrFail($id);
         $otp->update($request->all());
@@ -55,11 +71,19 @@ class OTPController extends Controller
     public function generate(Request $request)
     {
 
-        $request->validate([
-            'phoneNumber' => 'required|string',
+        $validator = Validator::make($request->all(), [
+            'phone_number' => 'required|string',
+        ], [
+            'phone_number.required' => 'Phone number is required.',
+            'phone_number.string' => 'Phone number must be a valid string.',
         ]);
 
-        $phoneNumber = $request->input('phoneNumber');
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+
+        $phoneNumber = $request->input('phone_number');
 
         // Telefon numarasını Account modelinde kontrol et
         $accountExists = Account::where('phoneNumber', $phoneNumber)->exists();
@@ -80,16 +104,26 @@ class OTPController extends Controller
 
         // OTP kodunu SMS ile gönderme işlemi yapılmalı
 
-        return response()->json(['message' => 'Otp code sent', 'status' => true,'smsCode'=>$otpCode], 200);
+        return response()->json(['message' => 'Otp code sent', 'status' => true], 200);
     }
 
     // Otp doğrulama ve giriş işlemi
     public function verify(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'phone_number' => 'required|string',
             'sms_code' => 'required|string',
+        ], [
+            'phone_number.required' => 'Phone number is required.',
+            'phone_number.string' => 'Phone number must be a valid string.',
+            'sms_code.required' => 'SMS code is required.',
+            'sms_code.string' => 'SMS code must be a valid string.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
 
         $phoneNumber = $request->input('phone_number');
         $smsCode = $request->input('sms_code');
@@ -117,9 +151,17 @@ class OTPController extends Controller
 
     public function authPhone(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'phone_number' => 'required|string',
+        ], [
+            'phone_number.required' => 'Phone number is required.',
+            'phone_number.string' => 'Phone number must be a valid string.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
 
         $phoneNumber = $request->input('phone_number');
 
@@ -150,11 +192,11 @@ class OTPController extends Controller
     {
     // Validasyon işlemi
         $validator = Validator::make($request->all(), [
-            'phoneNumber' => 'required|string',
-            'smsCode'     => 'required|string',
+            'phone_number' => 'required|string',
+            'sms_code'     => 'required|string',
         ], [
-            'phoneNumber.required' => 'Phone number is required.',
-            'smsCode.required'     => 'SMS code is required.',
+            'phone_number.required' => 'Phone number is required.',
+            'sms_code.required'     => 'SMS code is required.',
         ]);
 
         if ($validator->fails()) {
@@ -162,32 +204,21 @@ class OTPController extends Controller
         }
 
         // Telefon numarasına sahip ve SMS kodu doğru olan bir Otp olup olmadığını kontrol et
-        $otp = Otp::where('phone_number', $request->phoneNumber)
-            ->where('sms_code', $request->smsCode)
-            ->first(); 
+        $otp = Otp::where('phone_number', $request->phone_number)
+            ->where('sms_code', $request->sms_code)
+            ->first();
         if ($otp) {
             // Otp var ise, ilişkili Account'ı döndür
             $account = Account::with(['city', 'district'])
-            ->where('phoneNumber', $request->phoneNumber)
+            ->where('phoneNumber', $request->phone_number)
             ->first();
 
             if ($account) {
                 Auth::login($account);
-                $token = CustomToken::create([
-                    'account_id' => $account->id,
-                    'name' => 'auth_token',
-                    'token' => bin2hex(random_bytes(40)), 
-                    'abilities' => json_encode(['*']),
-                ]);
-                $account->makeHidden(['city_id', 'district_id','photoURL','created_at','updated_at']);
-                $account->city->makeHidden(['created_at','updated_at']);
-                $account->district->makeHidden(['created_at','updated_at']);
-                $camelCasedAccount = $this->convertKeysToCamelCase($account->toArray());
                 return response()->json([
                     'status' => true,
                     'success' => true,
-                    'account' => $camelCasedAccount,
-                    'token' => $token->token,
+                    'account' => $account
                 ], 200);
             } else {
                 return response()->json([
@@ -201,23 +232,6 @@ class OTPController extends Controller
                 'message' => 'Invalid Otp code.',
             ], 400);
         }
-    }
-    private function convertKeysToCamelCase($array)
-    {
-        $camelCasedArray = [];
-        foreach ($array as $key => $value) {
-            // Anahtarı camel case formatına çevir
-            $camelKey = Str::camel($key);
-
-            // Değer dizi veya nesne ise, recursive olarak camel case çevir
-            if (is_array($value) || is_object($value)) {
-                $value = $this->convertKeysToCamelCase((array) $value);
-            }
-
-            $camelCasedArray[$camelKey] = $value;
-        }
-
-        return $camelCasedArray;
     }
 
     public function checkSession()
